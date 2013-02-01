@@ -27,5 +27,29 @@
         <setting id="notifications.enabled" label="30106" type="bool" default="true" />
         <setting label="30108" type="action" action="RunScript($CWD/notification.py)" />
     </category>
+
+    <category label="30127">
+        <setting id="tvdb.enabled" label="30128" type="bool" default="false" />
+        <setting id="tvdb.apikey" label="30126" type="text" default="01F0668B2FC765B9"/>
+        <setting id="tvdb.showart" label="30129" type="bool" default="false" />
+    </category>
+
+    <category label="30131">
+        <setting id="tmdb.enabled" label="30132" type="bool" default="false" />
+        <setting id="tmdb.apikey" label="30126" type="text" default="c974c461a9767defec862674bf6c704e"/>
+        <setting id="tmdb.showart" label="30133" type="bool" default="false" />
+    </category>
+
+    <category label="30122">
+        <setting id="sickbeard.enabled" label="30130" type="bool" default="false" />
+        <setting id="sickbeard.baseurl" label="30125" type="text" default="http://localhost:8081"/>
+        <setting id="sickbeard.apikey" label="30126" type="text" default="cf6a9873e3f6dd25abbb654c7e362d9d"/>
+    </category>
+
+    <category label="30123">
+        <setting id="couchpotato.enabled" label="30124" type="bool" default="false" />
+        <setting id="couchpotato.baseurl" label="30125" type="text" default="http://localhost:5050"/>
+        <setting id="couchpotato.apikey" label="30126" type="text" default="71e9ea6a3e16430389450eb88e93a8a1"/>
+    </category>
 </settings>
 

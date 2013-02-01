@@ -20,6 +20,11 @@
 import datetime
 import threading
 import time
+import urllib
+import urllib2
+import json
+import sickbeard
+import os
 
 import xbmc
 import xbmcgui
@@ -28,10 +33,12 @@ import source as src
 from notification import Notification
 from strings import *
 import buggalo
+import sqlite3
 
 import streaming
+import re
 
-DEBUG = False
+DEBUG = True
 
 MODE_EPG = 'EPG'
 MODE_TV = 'TV'
@@ -88,6 +95,8 @@ class TVGuide(xbmcgui.WindowXML):
     C_MAIN_DESCRIPTION = 4022
     C_MAIN_IMAGE = 4023
     C_MAIN_LOGO = 4024
+    C_MAIN_SICKBEARD_OR_COUCHPOTATO_ICON = 4025
+    C_MAIN_CATEGORY = 4026
     C_MAIN_TIMEBAR = 4100
     C_MAIN_LOADING = 4200
     C_MAIN_LOADING_PROGRESS = 4201
@@ -109,6 +118,7 @@ class TVGuide(xbmcgui.WindowXML):
     C_MAIN_OSD_DESCRIPTION = 6003
     C_MAIN_OSD_CHANNEL_LOGO = 6004
     C_MAIN_OSD_CHANNEL_TITLE = 6005
+    C_MAIN_OSD_SICKBEARD_ICON = 6006
 
     def __new__(cls):
         return super(TVGuide, cls).__new__(cls, 'script-tvguide-main.xml', ADDON.getAddonInfo('path'))
@@ -376,7 +386,7 @@ class TVGuide(xbmcgui.WindowXML):
                     self.database.setCustomStreamUrl(program.channel, d.stream)
                     self.playChannel(program.channel)
 
-
+        
     def _showContextMenu(self, program):
         self._hideControl(self.C_MAIN_MOUSE_CONTROLS)
         d = PopupMenu(self.database, program, not program.notificationScheduled)
@@ -399,6 +409,27 @@ class TVGuide(xbmcgui.WindowXML):
 
         elif buttonClicked == PopupMenu.C_POPUP_PLAY:
             self.playChannel(program.channel)
+
+        elif buttonClicked == PopupMenu.C_POPUP_RECORD_SICKBEARD:
+            sbAPI = sickbeard.SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            if sbAPI.addNewShow(program.seriesId) == True:
+                c = None
+                profilePath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
+                if not os.path.exists(profilePath):
+                    os.makedirs(profilePath)
+                self.databasePath = os.path.join(profilePath, 'source.db')
+                try:
+                    self.conn = sqlite3.connect(self.databasePath, detect_types=sqlite3.PARSE_DECLTYPES)
+                    self.conn.execute('PRAGMA foreign_keys = ON')
+                    self.conn.row_factory = sqlite3.Row
+
+                    c = self.conn.cursor()
+                    c.execute('UPDATE programs SET in_sickbeard = 1 where series_id = ?',[program.seriesId])
+                    c.close()
+                finally:
+                    c.close()
+                    self.conn.commit()
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
 
         elif buttonClicked == PopupMenu.C_POPUP_CHANNELS:
             d = ChannelsMenu(self.database)
@@ -439,6 +470,10 @@ class TVGuide(xbmcgui.WindowXML):
 
         self.setControlLabel(self.C_MAIN_TITLE, '[B]%s[/B]' % program.title)
         self.setControlLabel(self.C_MAIN_TIME, '[B]%s - %s[/B]' % (self.formatTime(program.startDate), self.formatTime(program.endDate)))
+        
+        #Rob Newton - 20130130 - Display category
+        self.setControlLabel(self.C_MAIN_CATEGORY, '[B]%s[/B]' % program.category)
+        
         if program.description:
             description = program.description
         else:
@@ -449,6 +484,14 @@ class TVGuide(xbmcgui.WindowXML):
             self.setControlImage(self.C_MAIN_LOGO, program.channel.logo)
         if program.imageSmall is not None:
             self.setControlImage(self.C_MAIN_IMAGE, program.imageSmall)
+        
+        #Rob Newton - 20130130 - Display SickBeard logo bottom right of cell
+        if program.sickbeardManaged == 1:
+            self.setControlImage(self.C_MAIN_SICKBEARD_OR_COUCHPOTATO_ICON, 'sb-logo-tiny.png')
+        elif program.sickbeardManaged == 1:
+            self.setControlImage(self.C_MAIN_SICKBEARD_OR_COUCHPOTATO_ICON, 'cp-logo-tiny.png')
+        else:
+            self.setControlImage(self.C_MAIN_SICKBEARD_OR_COUCHPOTATO_ICON, '')
 
         if ADDON.getSetting('program.background.enabled') == 'true' and program.imageLarge is not None:
             self.setControlImage(self.C_MAIN_BACKGROUND, program.imageLarge)
@@ -572,6 +615,10 @@ class TVGuide(xbmcgui.WindowXML):
                 self.setControlImage(self.C_MAIN_OSD_CHANNEL_LOGO, self.osdProgram.channel.logo)
             else:
                 self.setControlImage(self.C_MAIN_OSD_CHANNEL_LOGO, '')
+            
+            #Rob Newton - 20130130 - Display SickBeard logo bottom right of cell
+            #if program.sickbeardManaged:
+            #    self._showControl(self.C_MAIN_OSD_SICKBEARD_ICON)
 
         self.mode = MODE_OSD
         self._showControl(self.C_MAIN_OSD)
@@ -653,6 +700,21 @@ class TVGuide(xbmcgui.WindowXML):
                 else:
                     noFocusTexture = 'tvguide-program-grey.png'
                     focusTexture = 'tvguide-program-grey-focus.png'
+
+                #Rob Newton - 20130127 - Override the standard item first then color items by category
+                noFocusTexture = 'bevelBlueItemMiddle.png'
+                
+                if program.category == 'News':
+                    noFocusTexture = 'bevelAquagreenItemMiddle.png'
+
+                if program.category == 'Movie':
+                    noFocusTexture = 'bevelRedItemMiddle.png'
+
+                if program.category == 'Sports':
+                    noFocusTexture = 'bevelGreenItemMiddle.png'
+
+                if program.category == 'Kids':
+                    noFocusTexture = 'bevelOrangeItemMiddle.png'
 
                 if cellWidth < 25:
                     title = '' # Text will overflow outside the button if it is too narrow
@@ -916,6 +978,7 @@ class PopupMenu(xbmcgui.WindowXMLDialog):
     C_POPUP_REMIND = 4002
     C_POPUP_CHANNELS = 4003
     C_POPUP_QUIT = 4004
+    C_POPUP_RECORD_SICKBEARD = 4005
     C_POPUP_CHANNEL_LOGO = 4100
     C_POPUP_CHANNEL_TITLE = 4101
     C_POPUP_PROGRAM_TITLE = 4102

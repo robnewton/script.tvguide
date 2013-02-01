@@ -25,6 +25,10 @@ import time
 import urllib2
 from xml.etree import ElementTree
 import buggalo
+import tvdb
+import tmdb
+import sickbeard
+import couchpotato
 
 from strings import *
 
@@ -55,8 +59,9 @@ class Channel(object):
         return 'Channel(id=%s, title=%s, logo=%s, streamUrl=%s)' \
                % (self.id, self.title, self.logo, self.streamUrl)
 
+#Rob Newton - 20130130 - Added series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato
 class Program(object):
-    def __init__(self, channel, title, startDate, endDate, description, imageLarge = None, imageSmall=None, notificationScheduled = None):
+    def __init__(self, channel, title, startDate, endDate, description, imageLarge = None, imageSmall=None, seriesId=0, movieId=0, episodeId=0, seasonNumber=0, episodeNumber=0, category='other', new=0, sickbeardManaged=0, couchpotatoManaged=0, notificationScheduled = None):
         """
 
         @param channel:
@@ -67,6 +72,16 @@ class Program(object):
         @param description:
         @param imageLarge:
         @param imageSmall:
+        @param seriesId:
+        @param movieId:
+        @param episodeId:
+        @param seasonNumber:
+        @param episodeNumber:
+        @param category:
+        @param new:
+        @param sickbeardManaged:
+        @param couchpotatoManaged:
+        @param notificationScheduled:
         """
         self.channel = channel
         self.title = title
@@ -75,11 +90,20 @@ class Program(object):
         self.description = description
         self.imageLarge = imageLarge
         self.imageSmall = imageSmall
+        self.seriesId = seriesId
+        self.movieId = movieId
+        self.episodeId = episodeId
+        self.seasonNumber = seasonNumber
+        self.episodeNumber = episodeNumber
+        self.category = category
+        self.new = new
+        self.sickbeardManaged = sickbeardManaged
+        self.couchpotatoManaged = couchpotatoManaged
         self.notificationScheduled = notificationScheduled
 
     def __repr__(self):
-        return 'Program(channel=%s, title=%s, startDate=%s, endDate=%s, description=%s, imageLarge=%s, imageSmall=%s)' % \
-            (self.channel, self.title, self.startDate, self.endDate, self.description, self.imageLarge, self.imageSmall)
+        return 'Program(channel=%s, title=%s, startDate=%s, endDate=%s, description=%s, imageLarge=%s, imageSmall=%s, seriesId=%s, movieId=%s, episodeId=%s, seasonNumber=%s, episodeNumber=%s, category=%s, new=%s, sickbeardManaged=%s, couchpotatoManaged=%s, notificationScheduled=%s)' % \
+            (self.channel, self.title, self.startDate, self.endDate, self.description, self.imageLarge, self.imageSmall, self.seriesId, self.movieId, self.episodeId, self.seasonNumber, self.episodeNumber, self.category, self.new, self.sickbeardManaged, self.couchpotatoManaged, self.notificationScheduled)
 
 class SourceException(Exception):
     pass
@@ -291,6 +315,9 @@ class Database(object):
 
         return expired
 
+    def setShowAsSickBeardManaged(self, seriesId):
+        c = self.conn.cursor()
+        c.execute('UPDATE programs set in_sickbeard = 1 where series_id = ?',[program.seriesId])
 
     def updateChannelAndProgramListCaches(self, callback, date = datetime.datetime.now(), progress_callback = None, clearExistingProgramList = True):
         self.eventQueue.append([self._updateChannelAndProgramListCaches, callback, date, progress_callback, clearExistingProgramList])
@@ -351,8 +378,8 @@ class Database(object):
                     else:
                         channel = program.channel
 
-                    c.execute('INSERT INTO programs(channel, title, start_date, end_date, description, image_large, image_small, source, updates_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        [channel, program.title, program.startDate, program.endDate, program.description, program.imageLarge, program.imageSmall, self.source.KEY, updatesId])
+                    c.execute('INSERT INTO programs(channel, title, start_date, end_date, description, image_large, image_small, source, updates_id, series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [channel, program.title, program.startDate, program.endDate, program.description, program.imageLarge, program.imageSmall, self.source.KEY, updatesId, program.seriesId, program.movieId, program.episodeId, program.seasonNumber, program.episodeNumber, program.category, program.new, program.sickbeardManaged, program.couchpotatoManaged])
 
             # channels updated
             c.execute("UPDATE sources SET channels_updated=? WHERE id=?", [datetime.datetime.now(), self.source.KEY])
@@ -487,7 +514,7 @@ class Database(object):
         c.execute('SELECT * FROM programs WHERE channel=? AND source=? AND start_date <= ? AND end_date >= ?', [channel.id, self.source.KEY, now, now])
         row = c.fetchone()
         if row:
-            program = Program(channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'])
+            program = Program(channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'], row['series_id'], row['movie_id'], row['episode_id'], row['season_number'], row['episode_number'], row['category'], row['new'], row['in_sickbeard'], row['in_couchpotato'])
         c.close()
 
         return program
@@ -501,7 +528,7 @@ class Database(object):
         c.execute('SELECT * FROM programs WHERE channel=? AND source=? AND start_date >= ? ORDER BY start_date ASC LIMIT 1', [program.channel.id, self.source.KEY, program.endDate])
         row = c.fetchone()
         if row:
-            nextProgram = Program(program.channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'])
+            nextProgram = Program(program.channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'], row['series_id'], row['movie_id'], row['episode_id'], row['season_number'], row['episode_number'], row['category'], row['new'], row['in_sickbeard'], row['in_couchpotato'])
         c.close()
 
         return nextProgram
@@ -515,7 +542,7 @@ class Database(object):
         c.execute('SELECT * FROM programs WHERE channel=? AND source=? AND end_date <= ? ORDER BY start_date DESC LIMIT 1', [program.channel.id, self.source.KEY, program.startDate])
         row = c.fetchone()
         if row:
-            previousProgram = Program(program.channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'])
+            previousProgram = Program(program.channel, row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'], row['series_id'], row['movie_id'], row['episode_id'], row['season_number'], row['episode_number'], row['category'], row['new'], row['in_sickbeard'], row['in_couchpotato'])
         c.close()
 
         return previousProgram
@@ -539,7 +566,7 @@ class Database(object):
         c = self.conn.cursor()
         c.execute('SELECT p.*, (SELECT 1 FROM notifications n WHERE n.channel=p.channel AND n.program_title=p.title AND n.source=p.source) AS notification_scheduled FROM programs p WHERE p.channel IN (\'' + ('\',\''.join(channelMap.keys())) + '\') AND p.source=? AND p.end_date > ? AND p.start_date < ?', [self.source.KEY, startTime, endTime])
         for row in c:
-            program = Program(channelMap[row['channel']], row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'], row['notification_scheduled'])
+            program = Program(channelMap[row['channel']], row['title'], row['start_date'], row['end_date'], row['description'], row['image_large'], row['image_small'], row['series_id'], row['movie_id'], row['episode_id'], row['season_number'], row['episode_number'], row['category'], row['new'], row['in_sickbeard'], row['in_couchpotato'], row['notification_scheduled'])
             programList.append(program)
 
 
@@ -634,7 +661,10 @@ class Database(object):
                 c.execute('CREATE TABLE sources(id TEXT PRIMARY KEY, channels_updated TIMESTAMP)')
                 c.execute('CREATE TABLE updates(id INTEGER PRIMARY KEY, source TEXT, date TEXT, programs_updated TIMESTAMP)')
                 c.execute('CREATE TABLE channels(id TEXT, title TEXT, logo TEXT, stream_url TEXT, source TEXT, visible BOOLEAN, weight INTEGER, PRIMARY KEY (id, source), FOREIGN KEY(source) REFERENCES sources(id) ON DELETE CASCADE)')
-                c.execute('CREATE TABLE programs(channel TEXT, title TEXT, start_date TIMESTAMP, end_date TIMESTAMP, description TEXT, image_large TEXT, image_small TEXT, source TEXT, updates_id INTEGER, FOREIGN KEY(channel, source) REFERENCES channels(id, source) ON DELETE CASCADE, FOREIGN KEY(updates_id) REFERENCES updates(id) ON DELETE CASCADE)')
+                
+                #Rob Newton - 20130130 - Added series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato
+                c.execute('CREATE TABLE programs(channel TEXT, title TEXT, start_date TIMESTAMP, end_date TIMESTAMP, description TEXT, image_large TEXT, image_small TEXT, source TEXT, updates_id INTEGER, series_id INTEGER, movie_id TEXT, episode_id INTEGER, season_number INTEGER, episode_number INTEGER, category TEXT, new INTEGER, in_sickbeard INTEGER, in_couchpotato INTEGER, FOREIGN KEY(channel, source) REFERENCES channels(id, source) ON DELETE CASCADE, FOREIGN KEY(updates_id) REFERENCES updates(id) ON DELETE CASCADE)')
+                
                 c.execute('CREATE INDEX program_list_idx ON programs(source, channel, start_date, end_date)')
                 c.execute('CREATE INDEX start_date_idx ON programs(start_date)')
                 c.execute('CREATE INDEX end_date_idx ON programs(end_date)')
@@ -651,7 +681,10 @@ class Database(object):
                 c.execute('DROP TABLE channels')
                 c.execute('DROP TABLE programs')
                 c.execute('CREATE TABLE channels(id TEXT, title TEXT, logo TEXT, stream_url TEXT, source TEXT, visible BOOLEAN, weight INTEGER, PRIMARY KEY (id, source), FOREIGN KEY(source) REFERENCES sources(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)')
-                c.execute('CREATE TABLE programs(channel TEXT, title TEXT, start_date TIMESTAMP, end_date TIMESTAMP, description TEXT, image_large TEXT, image_small TEXT, source TEXT, updates_id INTEGER, FOREIGN KEY(channel, source) REFERENCES channels(id, source) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED, FOREIGN KEY(updates_id) REFERENCES updates(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)')
+                
+                #Rob Newton - 20130130 - Added series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato
+                c.execute('CREATE TABLE programs(channel TEXT, title TEXT, start_date TIMESTAMP, end_date TIMESTAMP, description TEXT, image_large TEXT, image_small TEXT, source TEXT, updates_id INTEGER, series_id INTEGER, movie_id TEXT, episode_id INTEGER, season_number INTEGER, episode_number INTEGER, category TEXT, new INTEGER, in_sickbeard INTEGER, in_couchpotato INTEGER, FOREIGN KEY(channel, source) REFERENCES channels(id, source) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED, FOREIGN KEY(updates_id) REFERENCES updates(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)')
+                
                 c.execute('CREATE INDEX program_list_idx ON programs(source, channel, start_date, end_date)')
                 c.execute('CREATE INDEX start_date_idx ON programs(start_date)')
                 c.execute('CREATE INDEX end_date_idx ON programs(end_date)')
@@ -783,7 +816,7 @@ class YouSeeTvSource(Source):
                     self._parseDate(program['end']),
                     description,
                     imagePrefix + program['images_sixteenbynine']['large'],
-                    imagePrefix + program['images_sixteenbynine']['small'],
+                    imagePrefix + program['images_sixteenbynine']['small']
                 )
                 yield p
 
@@ -849,6 +882,12 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
     event, root = context.next()
     elements_parsed = 0
 
+    #Rob Newton - 20130131 - Only need to instantiate these once
+    tmdbAPI = tmdb.TMDB(ADDON.getSetting('tmdb.apikey'))
+    tvdbAPI = tvdb.TVDB(ADDON.getSetting('tvdb.apikey'))
+    sbAPI = sickbeard.SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+    cpAPI = couchpotato.CouchPotato(ADDON.getSetting('couchpotato.baseurl'),ADDON.getSetting('couchpotato.apikey'))
+    
     for event, elem in context:
         if event == "end":
             result = None
@@ -861,7 +900,113 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                     icon = iconElement.get("src")
                 if not description:
                     description = strings(NO_DESCRIPTION)
-                result = Program(channel, elem.findtext('title'), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, imageSmall=icon)
+                
+                #Rob Newton - 20130127 - Parse the category of the program
+                movie = False
+                category = 'Normal'
+                categories = ''
+                categoryList = elem.findall("category")
+                for cat in categoryList:
+                    categories += ', ' + cat.text
+                    if cat.text == 'Movie':
+                        movie = True
+                        category = cat.text
+                    elif cat.text == 'Sports':
+                        category = cat.text
+                    elif cat.text == 'Children':
+                        category = 'Kids'
+                    elif cat.text == 'Kids':
+                        category = cat.text
+                    elif cat.text == 'News':
+                        category = cat.text
+                    elif cat.text == 'Comedy':
+                        category = cat.text
+                    elif cat.text == 'Drama':
+                        category = cat.text
+                
+                #Trim prepended comma and space (considered storing all categories, but one is ok for now)
+                categories = categories[2:]
+                xbmc.log('[script.tvguide] Categories identified: %s' % (categories), xbmc.LOGDEBUG)
+                
+                #If the movie flag was set, it should override the rest (ex: comedy and movie sometimes come together)
+                if movie:
+                    category = 'Movie'
+                
+                #Rob Newton - 20130127 - Read the "new" boolean for this program and store as 1 or 0 for the db
+                try:
+                    if elem.find("new") != None:
+                        new = 1
+                    else:
+                        new = 0
+                except:
+                    new = 0
+                    pass
+                
+                #Rob Newton - 20130127 - Decipher the TVDB ID by using the Zap2it ID in dd_progid
+                tvdbid = 0
+                episodeId = 0
+                seasonNumber = 0
+                episodeNumber = 0
+                if not movie and ADDON.getSetting('tvdb.enabled') == 'true':
+                    dd_progid = ''
+                    episodeNumList = elem.findall("episode-num")
+                    for epNum in episodeNumList:
+                        if epNum.attrib["system"] == 'dd_progid':
+                            dd_progid = epNum.text
+
+                    #xbmc.log('[script.tvguide] dd_progid %s' % (dd_progid), xbmc.LOGDEBUG)
+
+                    #The Zap2it ID is the first part of the string delimited by the dot
+                    #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
+                    dd_progid = dd_progid.split('.',1)[0]
+                    tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
+                    #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
+                    if tvdbid == 0:
+                        tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
+
+                    if tvdbid > 0:
+                        #Date element holds the original air date of the program
+                        airdateStr = elem.findtext('date')
+                        if airdateStr != None:
+                            try:
+                                #Change date format into the byAirDate lookup format (YYYY-MM-DD)
+                                t = time.strptime(airdateStr, '%Y%m%d')
+                                airDateTime = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+                                airdate = airDateTime.strftime('%Y-%m-%d')
+                                
+                                #Only way to get a unique lookup is to use TVDB ID and the airdate of the episode
+                                episode = ElementTree.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
+                                episode = episode.find("Episode")
+                                episodeId = episode.findtext("id")
+                                seasonNumber = episode.findtext("SeasonNumber")
+                                episodeNumber = episode.findtext("EpisodeNumber")
+                            except:
+                                pass
+                
+                #Rob Newton - 20130131 - Lookup the movie info from TMDB
+                imdbid = 0
+                if movie and ADDON.getSetting('tmdb.enabled') == 'true':
+                    #Date element holds the original air date of the program
+                    movieYear = elem.findtext('date')
+                    movieInfo = tmdbAPI.getMovie(elem.findtext('title'), movieYear)
+                    imdbid = movieInfo['imdb_id']
+                    moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
+                
+                #Rob Newton - 20130130 - Check for show being managed by SickBeard
+                sbManaged = 0
+                if ADDON.getSetting('sickbeard.enabled') == 'true':
+                    if sbAPI.isShowManaged(tvdbid):
+                        sbManaged = 1
+                
+                #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
+                cpManaged = 0
+                #if ADDON.getSetting('couchpotato.enabled') == 'true':
+                #    if cpAPI.isMovieManaged(imdbid):
+                #        cpManaged = 1
+                
+                result = Program(channel, elem.findtext('title'), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
+                
+                xbmc.log('[script.tvguide] new %r' % (result), xbmc.LOGDEBUG)
 
             elif elem.tag == "channel":
                 id = elem.get("id")

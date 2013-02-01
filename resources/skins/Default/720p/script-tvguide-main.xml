@@ -10,12 +10,57 @@
         <control type="image">
             <description>workaround for texture not being loaded</description>
             <posx>-10000</posx>
+            <texture>tvguide-program-grey.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
             <texture>tvguide-program-red.png</texture>
         </control>
         <control type="image">
             <description>workaround for texture not being loaded</description>
             <posx>-10000</posx>
             <texture>tvguide-program-red-focus.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>tvguide-program-green.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>tvguide-program-aquagreen.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>tvguide-program-orange.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>bevelRedItemMiddle.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>bevelBlueItemMiddle.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>bevelOrangeItemMiddle.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>bevelGreenItemMiddle.png</texture>
+        </control>
+        <control type="image">
+            <description>workaround for texture not being loaded</description>
+            <posx>-10000</posx>
+            <texture>bevelAquagreenItemMiddle.png</texture>
         </control>
 
         <!-- Background -->
@@ -347,7 +392,7 @@
             </control>
             <control type="label" id="4021">
                 <description>Program time</description>
-                <posx>900</posx>
+                <posx>600</posx>
                 <posy>510</posy>
                 <width>340</width>
                 <height>50</height>
@@ -376,6 +421,26 @@
                 <aspectratio>keep</aspectratio>
                 <fadetime>500</fadetime>
                 <texture>tvguide-logo-epg.png</texture>
+            </control>
+            <control type="image" id="4025">
+                <description>Conditional SickBeard or CouchPotato Icon</description>
+                <posx>890</posx>
+                <posy>520</posy>
+                <width>22</width>
+                <height>23</height>
+                <align>right</align>
+                <texture></texture>
+            </control>
+            <control type="label" id="4026">
+                <description>Program Category</description>
+                <posx>750</posx>
+                <posy>510</posy>
+                <width>340</width>
+                <height>50</height>
+                <textcolor>ffffffff</textcolor>
+                <font>font11</font>
+                <align>right</align>
+                <aligny>center</aligny>
             </control>
 
             <control type="image" id="4100">
@@ -638,7 +703,7 @@
             </control>
             <control type="label" id="6002">
                 <description>Program time</description>
-                <posx>1230</posx>
+                <posx>1000</posx>
                 <posy>10</posy>
                 <width>240</width>
                 <height>50</height>
@@ -679,6 +744,17 @@
                 <font>font13</font>
                 <align>center</align>
                 <visible>StringCompare(Control.GetLabel(6004),)</visible>
+            </control>
+            <control type="image" id="6006">
+                <description>Conditional SickBeard Icon</description>
+                <posx>1230</posx>
+                <posy>10</posy>
+                <width>22</width>
+                <height>23</height>
+                <align>right</align>
+                <aligny>center</aligny>
+				<visible>!Control.IsVisible(6006)</visible>
+                <texture>sb-logo-tiny.png</texture>
             </control>
 
         </control>
