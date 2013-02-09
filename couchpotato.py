@@ -27,11 +27,14 @@ class CouchPotato(object):
         self.baseurl = base_url
 
     def __repr__(self):
-        return 'CouchPotato(base_url=%s, apikey=%s)' % (self.baseurl, self.apikey)
+        return '[script.tvguide.CouchPotato] CouchPotato(baseurl=%s, apikey=%s)' % (self.baseurl, self.apikey)
 
     def _buildUrl(self, cmd, parms={}):
-        return '%s/api/%s/%s/?%s' % (self.baseurl, self.apikey, cmd, urllib.urlencode(parms))
+        url = '%s/api/%s/%s/?%s' % (self.baseurl, self.apikey, cmd, urllib.urlencode(parms))
+        xbmc.log('[script.tvguide.CouchPotato._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        return url
 
     def addMovie(self, imdbid):
         response = json.load(urllib.urlopen(self._buildUrl('movie.add', {'identifier' : imdbid})))
+        xbmc.log('[script.tvguide.CouchPotato.addMovie] imdbid=%s, result=%s' % (imdbid, response['added']), xbmc.LOGDEBUG)
         return response['added'] == 'true'

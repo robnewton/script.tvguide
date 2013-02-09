@@ -28,37 +28,28 @@ class SickBeard(object):
         self.baseurl = base_url
 
     def __repr__(self):
-        return 'SickBeard(base_url=%s, apikey=%s)' % (self.baseurl, self.apikey)
+        return '[script.tvguide.SickBeard] SickBeard(base_url=%s, apikey=%s)' % (self.baseurl, self.apikey)
 
-    def _get(self, url):
-        f = urllib2.urlopen(url)
-        a = f.read()
-        f.close()
-        return a
-
-    def _exec(self, cmd, parms, response):
+    def _buildUrl(self, cmd, parms={}):
         parmsCopy = parms.copy()
         parmsCopy.update({'cmd' : cmd})
         url = '%s/api/%s/?%s' % (self.baseurl, self.apikey, urllib.urlencode(parmsCopy))
-        xbmc.log('[script.tvguide.SickBeard] Url: %s' % (url), xbmc.LOGDEBUG)
-        f = urllib2.urlopen(url)
-        a = f.read()
-        f.close()
-        j = json.loads(a)
-        response = j
-        return j['result'] == 'success'
+        xbmc.log('[script.tvguide.SickBeard._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        return url
 
     def isShowManaged(self, tvdbid):
-        return self._exec('show', {'tvdbid': tvdbid}, json)
+        response = json.load(urllib.urlopen(self._buildUrl('show', {'tvdbid' : tvdbid})))
+        return response['result'] == 'success'
 
     def addNewShow(self, tvdbid, flatten=0, status='skipped'):
-        xbmc.log('[script.tvguide.SickBeard.addNewShow] tvdbid=%s, flatten=%s, status=%s' % (tvdbid, flatten, status), xbmc.LOGDEBUG)
-        return self._exec('show.addnew', {'tvdbid': tvdbid, 'flatten_folders' : flatten, 'status' : status}, json)
+        response = json.load(urllib.urlopen(self._buildUrl('show.addnew', {'tvdbid' : tvdbid, 'flatten_folders' : flatten, 'status' : status})))
+        xbmc.log('[script.tvguide.SickBeard.addNewShow] tvdbid=%s, flatten=%s, status=%s, result=%s' % (tvdbid, flatten, status, response['result']), xbmc.LOGDEBUG)
+        return response['result'] == 'success'
 
     # Get the show ID numbers
     def getShowIds(self):
         show_ids=[]
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+"?cmd=shows"))
+        result=json.load(urllib.urlopen(self._buildUrl('shows', {})))
         for each in result['data']:
             show_ids.append(each)
         return show_ids
@@ -67,33 +58,33 @@ class SickBeard(object):
     def getShowInfo(self, show_ids):
         show_info={}
         for id in show_ids:
-            result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show&tvdbid='+id))
+            result=json.load(urllib.urlopen(self._buildUrl('show', {'tvdbid' : id})))
             name=result['data']['show_name']
             paused=result['data']['paused']
             show_info[name] = [id, paused]
         return show_info
 
     # Returns the details of a show from Sickbeard 
-    def getShowDetails(self, show_id):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show&tvdbid='+show_id))
+    def getShowDetails(self, tvdbid):
+        result=json.load(urllib.urlopen(self._buildUrl('show', {'tvdbid' : tvdbid})))
         details=result['data']
         
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show.stats&tvdbid='+show_id))
+        result=json.load(urllib.urlopen(self._buildUrl('show.stats', {'tvdbid' : tvdbid})))
         total=result['data']['total']
         
         return details, total
 
     # Return a list of season numbers
-    def getSeasonNumberList(self, show_id):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show.seasonlist&tvdbid='+show_id))
+    def getSeasonNumberList(self, tvdbid):
+        result=json.load(urllib.urlopen(self._buildUrl('show.seasonlist', {'tvdbid' : tvdbid})))
         season_number_list = result['data']
         season_number_list.sort()
         return season_number_list
 
     # Get the list of episodes ina given season
-    def getSeasonEpisodeList(self, show_id, season):
+    def getSeasonEpisodeList(self, tvdbid, season):
         season = str(season)
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show.seasons&tvdbid='+show_id+'&season='+season))
+        result=json.load(urllib.urlopen(self._buildUrl('show.seasons', {'tvdbid' : tvdbid, 'season' : season})))
         season_episodes = result['data']
             
         for key in season_episodes.iterkeys():
@@ -106,37 +97,37 @@ class SickBeard(object):
         return season_episodes
 
     # Gets the show banner from Sickbeard    
-    def getShowBanner(self, show_id):
-        result = baseurl+'/showPoster/?show='+str(show_id)+'&which=banner'
+    def getShowBanner(self, tvdbid):
+        result = self.baseurl+'/showPoster/?show='+str(tvdbid)+'&which=banner'
         return result
 
     # Check if there is a cached thumbnail to use, if not use Sickbeard poster
-    def getShowPoster(self, show_id):
-        return baseurl+'/showPoster/?show='+str(show_id)+'&which=poster'
+    def getShowPoster(self, tvdbid):
+        return self.baseurl+'/showPoster/?show='+str(tvdbid)+'&which=poster'
 
     # Get list of upcoming episodes
     def getFutureShows(self):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=future&sort=date&type=today|soon'))
+        result=json.load(urllib.urlopen(self._buildUrl('future', {'sort' : 'date', 'type' : 'today|soon'})))
         future_list = result['data']
         return future_list
 
     # Return a list of the last 20 snatched/downloaded episodes    
     def getHistory(self):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=history&limit=20'))
+        result=json.load(urllib.urlopen(self._buildUrl('history', {'limit' : 20})))
         history = result['data']
         return history
 
     # Search the tvdb for a show using the Sickbeard API    
     def searchShowName(self, name):
         search_results = []
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=sb.searchtvdb&name='+name+'&lang=en'))
+        result=json.load(urllib.urlopen(self._buildUrl('sb.searchtvdb', {'name' : name, 'lang' : 'en'})))
         for each in result['data']['results']:
             search_results.append(each)
         return search_results
 
     # Return a list of the default settings for adding a new show
     def getDefaults(self):
-        defaults_result = json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=sb.getdefaults'))
+        defaults_result = json.load(urllib.urlopen(self._buildUrl('sb.getdefaults', {})))
         print defaults_result.keys()
         defaults_data = defaults_result['data']
         defaults = [defaults_data['status'], defaults_data['flatten_folders'], str(defaults_data['initial'])]
@@ -144,38 +135,38 @@ class SickBeard(object):
 
     # Return a list of the save paths set in Sickbeard
     def getRoodDirs(self):
-        directory_result = json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=sb.getrootdirs'))
+        directory_result = json.load(urllib.urlopen(self._buildUrl('sb.getrootdirs', {})))
         directory_result = directory_result['data']
         return directory_result
 
     # Get the version of Sickbeard
     def getSickbeardVersion(self):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=sb'))
+        result=json.load(urllib.urlopen(self._buildUrl('sb', {})))
         version = result['data']['sb_version']
         return version
 
     # Set the status of an episode
-    def setShowStatus(self, tvdbid, season, ep, status):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=episode.setstatus&tvdbid='+str(tvdbid)+'&season='+str(season)+'&episode='+str(ep)+'&status='+status))
+    def setShowStatus(self, tvdbid, season, episode, status):
+        result=json.load(urllib.urlopen(self._buildUrl('episode.setstatus', {'tvdbid' : tvdbid, 'season' : season, 'episode' : episode, 'status' : status})))
         return result
 
     # Return a list of the last 20 snatched/downloaded episodes    
     def forceSearch(self):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=sb.forcesearch'))
+        result=json.load(urllib.urlopen(self._buildUrl('sb.forcesearch', {})))
         success = result['result']
         settings.messageWindow("Force Search", "Force search returned "+success)
 
-    def setPausedState(self, paused, show_id):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show.pause&tvdbid='+show_id+'&pause='+paused))
+    def setPausedState(self, paused, tvdbid):
+        result=json.load(urllib.urlopen(self._buildUrl('show.pause', {'tvdbid' : tvdbid, 'pause' : paused})))
         message = result['message']
         return message
 
-    def manualSearch(self, tvdbid, season, ep):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=episode.search&tvdbid='+str(tvdbid)+'&season='+str(season)+'&episode='+str(ep)))
+    def manualSearch(self, tvdbid, season, episode):
+        result=json.load(urllib.urlopen(self._buildUrl('episode.search', {'tvdbid' : tvdbid, 'season' : season, 'episode' : episode})))
         message = result['message']
         return message    
 
     def deleteShow(self, tvdbid):
-        result=json.load(urllib.urlopen(('%s/api/%s/' % (self.baseurl, self.apikey))+'?cmd=show.delete&tvdbid='+str(tvdbid)))
+        result=json.load(urllib.urlopen(self._buildUrl('show.delete', {'tvdbid' : tvdbid})))
         message = result['message']
         return message     

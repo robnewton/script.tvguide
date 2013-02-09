@@ -34,12 +34,13 @@ class TMDB(object):
     def _buildUrl(self, cmd, parms={}):
         parmsCopy = parms.copy()
         parmsCopy.update({'api_key' : self.apikey})
-        #xbmc.log('[script.tvguide.TMDB] %s/%s?%s' % (self.baseurl, cmd, urllib.urlencode(parmsCopy)), xbmc.LOGDEBUG)
-        return '%s/%s?%s' % (self.baseurl, cmd, urllib.urlencode(parmsCopy))
+        url = '%s/%s?%s' % (self.baseurl, cmd, urllib.urlencode(parmsCopy))
+        xbmc.log('[script.tvguide.TMDB._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        return url
 
     def _getPosterBaseUrl(self):
         response = json.loads(urllib2.urlopen(urllib2.Request(self._buildUrl('configuration'), headers={"Accept": "application/json"})).read())
-        #xbmc.log('[script.tvguide.TMDB] Response: \r\n%s' % (response), xbmc.LOGDEBUG)
+        xbmc.log('[script.tvguide.TMDB] Response: \r\n%s' % (response), xbmc.LOGDEBUG)
         return response['images']['base_url']
 
     def getPosterUrl(self, filename):
@@ -48,10 +49,10 @@ class TMDB(object):
     def getMovie(self, movieName, year):
         response = json.loads(urllib2.urlopen(urllib2.Request(self._buildUrl('search/movie', {'query' : movieName, 'year' : year}), headers={"Accept": "application/json"})).read())
         if response['total_results'] > 0:
-            #xbmc.log('[script.tvguide.TMDB] Response: \r\n%s' % (response), xbmc.LOGDEBUG)
+            xbmc.log('[script.tvguide.TMDB] Response: \r\n%s' % (response), xbmc.LOGDEBUG)
             response = json.loads(urllib2.urlopen(urllib2.Request(self._buildUrl('movie/%s' % (response['results'][0]['id'])), headers={"Accept": "application/json"})).read())
         else:
-            #xbmc.log('[script.tvguide.TMDB] No matches found for %s' % (movieName), xbmc.LOGDEBUG)
+            xbmc.log('[script.tvguide.TMDB] No matches found for %s' % (movieName), xbmc.LOGDEBUG)
             response = json.loads('{"imdb_id":"", "poster_path":""}')
         return response
 
