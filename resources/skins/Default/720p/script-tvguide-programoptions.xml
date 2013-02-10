@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window type="dialog">
+    <allowoverlay>no</allowoverlay>
+	<coordinates>
+		<system>1</system>
+		<posx>0</posx>
+		<posy>0</posy>
+	</coordinates>
+    <controls>
+        <!-- Background -->
+		<control type="image">
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>720</height>
+            <texture>program-options-screen-background.png</texture>
+		</control>
+				
+				
+        <!-- Left Nav Menu -->
+        <control type="label" id="4001">
+			<description>Menu Option 1</description>
+            <posx>90</posx>
+            <posy>200</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label>Tune to Channel</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4002">
+			<description>Selected Menu Option</description>
+            <posx>90</posx>
+            <posy>260</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ff2d4053</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>[B]Record Episode[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4003">
+			<description>Menu Option 3</description>
+            <posx>90</posx>
+            <posy>325</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Record Series</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4004">
+			<description>Menu Option 4</description>
+            <posx>90</posx>
+            <posy>375</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Record Series w Options</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4005">
+			<description>Menu Option 5</description>
+            <posx>90</posx>
+            <posy>425</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Set Reminder</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4006">
+			<description>Menu Option 6</description>
+            <posx>90</posx>
+            <posy>475</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Full Info</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4007">
+			<description>Menu Option 7</description>
+            <posx>90</posx>
+            <posy>525</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Upcoming Shows</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4008">
+			<description>Menu Option 8</description>
+            <posx>90</posx>
+            <posy>575</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>Exit</label>
+            <aligny>center</aligny>
+        </control>
+		
+		
+        <!-- Program Info -->
+        <control type="label" id="4100">
+			<description>Channel Name</description>
+            <posx>405</posx>
+            <posy>82</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>[B]10 My WRLH[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4101">
+			<description>Series Name</description>
+            <posx>405</posx>
+            <posy>111</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label>[B]Law and Order: Special Victims Unit[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label">
+			<description>Date:</description>
+            <posx>405</posx>
+            <posy>191</posy>
+            <width>110</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Date:[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4102">
+			<description>Date Time Information</description>
+            <posx>515</posx>
+            <posy>191</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]8:00 PM - 9:00 PM (60 min) on Mon 2/4/13[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label">
+			<description>Genre(s):</description>
+            <posx>405</posx>
+            <posy>218</posy>
+            <width>110</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Genre(s):[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4103">
+			<description>Genre Information</description>
+            <posx>515</posx>
+            <posy>218</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Drama, Mystery and Suspense[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4110">
+			<description>Episode:</description>
+            <posx>405</posx>
+            <posy>248</posy>
+            <width>110</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Episode:[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4104">
+			<description>Episode Information/Movie Year</description>
+            <posx>515</posx>
+            <posy>248</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]"Pure" (Air Date: 3/8/05)[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label">
+			<description>Cast:</description>
+            <posx>405</posx>
+            <posy>278</posy>
+            <width>110</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Cast:[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4105">
+			<description>Cast</description>
+            <posx>515</posx>
+            <posy>278</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Ashton Kutcher, Sean-William Scott, Kristy Swanson, Jennifer Garner, Markal Sokoloff[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4106">
+			<description>Start Time</description>
+            <posx>405</posx>
+            <posy>346</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]8:00 PM[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4107">
+			<description>End Time</description>
+            <posx>1225</posx>
+            <posy>346</posy>
+            <width>665</width>
+            <height>5</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>right</align>
+            <label>[B]9:00 PM[/B]</label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4108">
+			<description>Description</description>
+            <posx>405</posx>
+            <posy>395</posy>
+            <width>775</width>
+            <height>200</height>
+            <textcolor>fffeffff</textcolor>
+            <font>font14</font>
+            <align>left</align>
+            <label>[B]Ric heads to a South Boston bar searching for relics of the town's bare knuckle boxing past; finds include brass knuckles, a ringbell and a portable camera.[/B]</label>
+            <aligny>top</aligny>
+			<wrapmultiline>true</wrapmultiline>
+        </control>
+		<control type="progress" id="4109">
+			<description>Program playback progress</description>
+            <posx>405</posx>
+            <posy>364</posy>
+            <width>820</width>
+            <height>5</height>
+			<reveal>false</reveal>
+            <texturebg>tvguide-black-progress.png</texturebg>
+            <lefttexture />
+            <midtexture>tvguide-white-progress.png</midtexture>
+            <righttexture />
+		</control>
+    </controls>
+</window>
