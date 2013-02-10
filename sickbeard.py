@@ -20,7 +20,8 @@
 import urllib
 import urllib2
 import json
-import xbmc
+
+from globals import *
 
 class SickBeard(object):
     def __init__(self, base_url='http://localhost:8081', api_key='cf6a9873e3f6dd25abbb654c7e362d9d'):
@@ -34,7 +35,7 @@ class SickBeard(object):
         parmsCopy = parms.copy()
         parmsCopy.update({'cmd' : cmd})
         url = '%s/api/%s/?%s' % (self.baseurl, self.apikey, urllib.urlencode(parmsCopy))
-        xbmc.log('[script.tvguide.SickBeard._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        debug(url)
         return url
 
     def isShowManaged(self, tvdbid):
@@ -43,7 +44,7 @@ class SickBeard(object):
 
     def addNewShow(self, tvdbid, flatten=0, status='skipped'):
         response = json.load(urllib.urlopen(self._buildUrl('show.addnew', {'tvdbid' : tvdbid, 'flatten_folders' : flatten, 'status' : status})))
-        xbmc.log('[script.tvguide.SickBeard.addNewShow] tvdbid=%s, flatten=%s, status=%s, result=%s' % (tvdbid, flatten, status, response['result']), xbmc.LOGDEBUG)
+        debug('tvdbid=%s, flatten=%s, status=%s, result=%s' % (tvdbid, flatten, status, response['result']))
         return response['result'] == 'success'
 
     # Get the show ID numbers

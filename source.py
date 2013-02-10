@@ -17,26 +17,28 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import StringIO
-import os
-import threading
-import datetime
-import time
-import urllib2
-from xml.etree import ElementTree
-import buggalo
-import tvdb
-import tmdb
-import sickbeard
-import couchpotato
-
-from strings import *
-
-import ysapi
 import xbmc
 import xbmcgui
 import xbmcvfs
+import urllib2
+import datetime
+import threading
+import StringIO
 import sqlite3
+import buggalo
+import time
+import os
+
+import sickbeard
+import couchpotato
+import ysapi
+import tvdb
+import tmdb
+
+from xml.etree import ElementTree
+from strings import *
+from globals import *
+
 
 SETTINGS_TO_CHECK = ['source', 'youseetv.category', 'xmltv.file', 'xmltv.logo.folder', 'ontv.url']
 
@@ -220,10 +222,10 @@ class Database(object):
 
             except sqlite3.OperationalError:
                 if cancel_requested_callback is None:
-                    xbmc.log('[script.tvguide] Database is locked, bailing out...', xbmc.LOGDEBUG)
+                    debug('Database is locked, bailing out...')
                     break
                 else: # ignore 'database is locked'
-                    xbmc.log('[script.tvguide] Database is locked, retrying...', xbmc.LOGDEBUG)
+                    debug('Database is locked, retrying...')
 
             except sqlite3.DatabaseError:
                 self.conn = None
@@ -336,7 +338,7 @@ class Database(object):
         dateStr = date.strftime('%Y-%m-%d')
         c = self.conn.cursor()
         try:
-            xbmc.log('[script.tvguide] Updating caches...', xbmc.LOGDEBUG)
+            debug('Updating caches...')
             if progress_callback:
                 progress_callback(0)
 
@@ -926,7 +928,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                 
                 #Trim prepended comma and space (considered storing all categories, but one is ok for now)
                 categories = categories[2:]
-                xbmc.log('[script.tvguide] Categories identified: %s' % (categories), xbmc.LOGDEBUG)
+                debug('Categories identified: %s' % categories)
                 
                 #If the movie flag was set, it should override the rest (ex: comedy and movie sometimes come together)
                 if movie:
@@ -954,7 +956,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                         if epNum.attrib["system"] == 'dd_progid':
                             dd_progid = epNum.text
 
-                    #xbmc.log('[script.tvguide] dd_progid %s' % (dd_progid), xbmc.LOGDEBUG)
+                    #debug('dd_progid %s' % dd_progid)
 
                     #The Zap2it ID is the first part of the string delimited by the dot
                     #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
@@ -1006,7 +1008,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                 
                 result = Program(channel, elem.findtext('title'), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
                 
-                xbmc.log('[script.tvguide] new %r' % (result), xbmc.LOGDEBUG)
+                debug('new %r' % result)
 
             elif elem.tag == "channel":
                 id = elem.get("id")

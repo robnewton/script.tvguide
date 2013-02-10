@@ -21,6 +21,8 @@ import urllib
 import urllib2
 import json
 
+from globals import *
+
 class CouchPotato(object):
     def __init__(self, base_url='http://localhost:5050', api_key='71e9ea6a3e16430389450eb88e93a8a1'):
         self.apikey = api_key
@@ -31,10 +33,10 @@ class CouchPotato(object):
 
     def _buildUrl(self, cmd, parms={}):
         url = '%s/api/%s/%s/?%s' % (self.baseurl, self.apikey, cmd, urllib.urlencode(parms))
-        xbmc.log('[script.tvguide.CouchPotato._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        debug(url)
         return url
 
     def addMovie(self, imdbid):
         response = json.load(urllib.urlopen(self._buildUrl('movie.add', {'identifier' : imdbid})))
-        xbmc.log('[script.tvguide.CouchPotato.addMovie] imdbid=%s, result=%s' % (imdbid, response['added']), xbmc.LOGDEBUG)
+        debug('imdbid=%s, result=%s' % (imdbid, response['added']))
         return response['added'] == 'true'

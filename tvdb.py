@@ -20,7 +20,8 @@
 import urllib
 import urllib2
 import re
-import xbmc
+
+from globals import *
 
 class TVDB(object):
     def __init__(self, api_key='01F0668B2FC765B9'):
@@ -32,27 +33,37 @@ class TVDB(object):
 
     def _buildUrl(self, cmd, parms={}):
         url = '%s/api/%s?%s' % (self.baseurl, cmd, urllib.urlencode(parms))
-        xbmc.log('[script.tvguide.TVDB._buildUrl] %s' % (url), xbmc.LOGDEBUG)
+        debug(url)
         return url
 
     def getIdByZap2it(self, zap2it_id):
-        response = urllib2.urlopen(self._buildUrl('GetSeriesByRemoteID.php', {'zap2it' : zap2it_id})).read()
-        tvdbidRE = re.compile('<id>(.+?)</id>', re.DOTALL)
-        match = tvdbidRE.search(response)
-        if match:
-            return match.group(1)
-        else:
+        try:
+            response = urllib2.urlopen(self._buildUrl('GetSeriesByRemoteID.php', {'zap2it' : zap2it_id})).read()
+            tvdbidRE = re.compile('<id>(.+?)</id>', re.DOTALL)
+            match = tvdbidRE.search(response)
+            if match:
+                return match.group(1)
+            else:
+                return 0
+        except:
             return 0
 
     def getEpisodeByAirdate(self, tvdbid, airdate):
-        return urllib2.urlopen(self._buildUrl('GetEpisodeByAirDate.php', {'apikey' : self.apikey, 'seriesid' : tvdbid, 'airdate' : airdate})).read()
+        try:
+            response = urllib2.urlopen(self._buildUrl('GetEpisodeByAirDate.php', {'apikey' : self.apikey, 'seriesid' : tvdbid, 'airdate' : airdate})).read()
+            return response
+        except:
+            return ''
 
     def getIdByShowName(self, showName):
-        #NOTE: This assumes an exact match. It is possible to get multiple results though. This could be smarter
-        response = urllib2.urlopen(self._buildUrl('GetSeries.php', {'seriesname' : showName})).read()
-        tvdbidRE = re.compile('<id>(.+?)</id>', re.DOTALL)
-        match = tvdbidRE.search(response)
-        if match:
-            return match.group(1)
-        else:
+        try:
+            #NOTE: This assumes an exact match. It is possible to get multiple results though. This could be smarter
+            response = urllib2.urlopen(self._buildUrl('GetSeries.php', {'seriesname' : showName})).read()
+            tvdbidRE = re.compile('<id>(.+?)</id>', re.DOTALL)
+            match = tvdbidRE.search(response)
+            if match:
+                return match.group(1)
+            else:
+                return 0
+        except:
             return 0
