@@ -17,14 +17,15 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import xbmcaddon
-import notification
 import xbmc
-import source
+import xbmcaddon
+
+from resources.lib.utils.notification import Notification
+from resources.lib.utils.database import *
 
 class Service(object):
     def __init__(self):
-        self.database = source.Database()
+        self.database = Database()
         self.database.initialize(self.onInit, None)
 
     def onInit(self):
@@ -33,7 +34,7 @@ class Service(object):
     def onCachesUpdated(self):
 
         if ADDON.getSetting('notifications.enabled') == 'true':
-            n = notification.Notification(self.database, ADDON.getAddonInfo('path'))
+            n = Notification(self.database, ADDON.getAddonInfo('path'))
             n.scheduleNotifications()
 
         self.database.close(None)

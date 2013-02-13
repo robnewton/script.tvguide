@@ -20,8 +20,7 @@
 import urllib
 import urllib2
 import json
-
-from globals import *
+from resources.lib.globals import *
 
 class TMDB(object):
     def __init__(self, api_key='c974c461a9767defec862674bf6c704e'):

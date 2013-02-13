@@ -18,11 +18,12 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 import xbmc
-from xml.etree import ElementTree
-from xml.parsers.expat import ExpatError
+import xbmcaddon
 import ConfigParser
 import os
-import xbmcaddon
+
+from xml.etree import ElementTree
+from xml.parsers.expat import ExpatError
 
 class StreamsService(object):
     def __init__(self):

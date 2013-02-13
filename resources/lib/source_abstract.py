@@ -1,5 +1,5 @@
 #
-#      Copyright (C) 2012 Tommy Winther
+#      Copyright (C) 2013 Tommy Winther
 #      http://tommy.winther.nu
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -17,15 +17,26 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import buggalo
-from resources.lib.gui.tvguide import TVGuide
+import urllib2
 
-buggalo.SUBMIT_URL = 'http://tommy.winther.nu/exception/submit.php'
+class Source(object):
+    def getDataFromExternal(self, date, progress_callback = None):
+        """
+        Retrieve data from external as a list or iterable. Data may contain both Channel and Program objects.
+        The source may choose to ignore the date parameter and return all data available.
 
-try:
-    w = TVGuide()
-    w.doModal()
-    del w
+        @param date: the date to retrieve the data for
+        @param progress_callback:
+        @return:
+        """
+        return None
 
-except Exception:
-    buggalo.onExceptionRaised()
+    def isUpdated(self, lastUpdated):
+        return True
+
+    def _downloadUrl(self, url):
+        u = urllib2.urlopen(url, timeout=30)
+        content = u.read()
+        u.close()
+
+        return content

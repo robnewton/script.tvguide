@@ -17,18 +17,18 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import datetime
-import os
 import xbmc
 import xbmcgui
-import source as src
+import datetime
+import os
 
-from strings import *
+from resources.lib.globals import *
+from resources.lib.strings import *
 
 class Notification(object):
     def __init__(self, database, addonPath):
         """
-        @param database: source.Database
+        @param database: Database
         """
         self.database = database
         self.addonPath = addonPath
@@ -73,7 +73,7 @@ class Notification(object):
 
 
 if __name__ == '__main__':
-    database = src.Database()
+    database = Database()
 
     def onNotificationsCleared():
         xbmcgui.Dialog().ok(strings(CLEAR_NOTIFICATIONS), strings(DONE))

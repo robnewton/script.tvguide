@@ -20,8 +20,7 @@
 import urllib
 import urllib2
 import re
-
-from globals import *
+from resources.lib.globals import *
 
 class TVDB(object):
     def __init__(self, api_key='01F0668B2FC765B9'):

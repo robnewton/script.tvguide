@@ -20,8 +20,7 @@
 import urllib
 import urllib2
 import json
-
-from globals import *
+from resources.lib.globals import *
 
 class CouchPotato(object):
     def __init__(self, base_url='http://localhost:5050', api_key='71e9ea6a3e16430389450eb88e93a8a1'):

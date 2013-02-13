@@ -22,8 +22,8 @@ import xbmcgui
 import buggalo
 import datetime
 
-from strings import *
-from globals import *
+from resources.lib.globals import *
+from resources.lib.strings import *
 
 class ProgramType(object):
     MOVIE = 100
