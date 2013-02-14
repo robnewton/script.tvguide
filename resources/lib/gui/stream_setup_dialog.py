@@ -124,15 +124,17 @@ class StreamSetupDialog(xbmcgui.WindowXMLDialog):
         elif controlId == self.C_STREAM_ADDONS_OK:
             listControl = self.getControl(self.C_STREAM_ADDONS_STREAMS)
             item = listControl.getSelectedItem()
-            stream = item.getProperty('stream')
-            self.database.setCustomStreamUrl(self.channel, stream)
+            if item:
+                stream = item.getProperty('stream')
+                self.database.setCustomStreamUrl(self.channel, stream)
             self.close()
 
         elif controlId == self.C_STREAM_FAVOURITES_OK:
             listControl = self.getControl(self.C_STREAM_FAVOURITES)
             item = listControl.getSelectedItem()
-            stream = item.getProperty('stream')
-            self.database.setCustomStreamUrl(self.channel, stream)
+            if item:
+                stream = item.getProperty('stream')
+                self.database.setCustomStreamUrl(self.channel, stream)
             self.close()
 
         elif controlId == self.C_STREAM_STRM_OK:
