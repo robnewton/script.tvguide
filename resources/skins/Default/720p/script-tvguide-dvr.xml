@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window type="dialog">
+    <allowoverlay>no</allowoverlay>
+	<coordinates>
+		<system>1</system>
+		<posx>0</posx>
+		<posy>0</posy>
+	</coordinates>
+    <controls>
+        <!-- Background -->
+		<control type="image">
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>720</height>
+            <texture>dvr-screen-background.png</texture>
+		</control>
+				
+				
+        <!-- Header -->
+        <control type="label" id="3100">
+			<description>Header Text</description>
+            <posx>165</posx>
+            <posy>45</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+		
+        <!-- Left Nav Menu -->
+        <control type="image" id="4301">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>100</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4302">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>150</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4303">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>200</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4304">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>250</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4305">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>300</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4306">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>365</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4307">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>420</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4308">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>470</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4309">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>520</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4310">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>570</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4311">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>620</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="image" id="4312">
+            <description>folder</description>
+            <posx>170</posx>
+            <posy>670</posy>
+			<visible>true</visible>
+            <texture>folder.png</texture>
+        </control>
+        <control type="label" id="4001">
+			<description>Menu Option 1</description>
+            <posx>210</posx>
+            <posy>105</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4002">
+			<description>Menu Option 2</description>
+            <posx>210</posx>
+            <posy>155</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4003">
+			<description>Menu Option 3</description>
+            <posx>210</posx>
+            <posy>205</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4004">
+			<description>Menu Option 4</description>
+            <posx>210</posx>
+            <posy>255</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4005">
+			<description>Menu Option 5</description>
+            <posx>210</posx>
+            <posy>305</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4006">
+			<description>Selected Menu Option</description>
+            <posx>210</posx>
+            <posy>370</posy>
+            <width>275</width>
+            <height>5</height>
+            <textcolor>ff2d4053</textcolor>
+            <font>font16</font>
+            <align>left</align>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="image" id="4350">
+            <description>left arrow</description>
+            <posx>136</posx>
+            <posy>362</posy>
+			<visible>true</visible>
+            <texture>arrow-left.png</texture>
+        </control>
+        <control type="image" id="4351">
+            <description>right arrow</description>
+            <posx>511</posx>
+            <posy>362</posy>
+			<visible>true</visible>
+            <texture flipx="true">arrow-left.png</texture>
+        </control>
+        <control type="image" id="4352">
+            <description>green ok button</description>
+            <posx>488</posx>
+            <posy>388</posy>
+			<visible>true</visible>
+            <texture>green-ok-button.png</texture>
+        </control>
+        <control type="label" id="4007">
+			<description>Menu Option 7</description>
+            <posx>210</posx>
+            <posy>430</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4008">
+			<description>Menu Option 8</description>
+            <posx>210</posx>
+            <posy>475</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4009">
+			<description>Menu Option 9</description>
+            <posx>210</posx>
+            <posy>525</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4010">
+			<description>Menu Option 10</description>
+            <posx>210</posx>
+            <posy>575</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4011">
+			<description>Menu Option 11</description>
+            <posx>210</posx>
+            <posy>625</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+        <control type="label" id="4012">
+			<description>Menu Option 12</description>
+            <posx>210</posx>
+            <posy>675</posy>
+            <width>280</width>
+            <height>5</height>
+            <textcolor>ffd6ffff</textcolor>
+			<font>font16</font>
+            <label></label>
+            <aligny>center</aligny>
+        </control>
+		
+        <!-- Submenu -->
+        <control type="label" id="4200">
+            <description>visibility marker for Submenu group</description>
+        </control>
+        <control type="group">
+            <description>Submenu group</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <visible>Control.IsVisible(4200)</visible>
+
+			<control type="label" id="4201">
+				<description>Submenu Option 1</description>
+				<posx>570</posx>
+				<posy>370</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4202">
+				<description>Submenu Option 2</description>
+				<posx>570</posx>
+				<posy>430</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4203">
+				<description>Submenu Option 3</description>
+				<posx>570</posx>
+				<posy>490</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4204">
+				<description>Submenu Option 4</description>
+				<posx>570</posx>
+				<posy>550</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4205">
+				<description>Submenu Option 5</description>
+				<posx>570</posx>
+				<posy>610</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4206">
+				<description>Submenu Option 6</description>
+				<posx>570</posx>
+				<posy>670</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4207">
+				<description>Submenu Option 7</description>
+				<posx>570</posx>
+				<posy>730</posy>
+				<width>280</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font16</font>
+				<label></label>
+				<aligny>center</aligny>
+			</control>
+        </control>
+		
+        <!-- Epsiode Info -->
+        <control type="label" id="4100">
+            <description>visibility marker for Episode Info group</description>
+        </control>
+        <control type="group">
+            <description>Episode Info group</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <visible>Control.IsVisible(4100)</visible>
+
+			<control type="label" id="4101">
+				<description>Channel Name</description>
+				<posx>540</posx>
+				<posy>335</posy>
+				<width>665</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]10 My WRLH[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4102">
+				<description>Series Name</description>
+				<posx>540</posx>
+				<posy>380</posy>
+				<width>665</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font16</font>
+				<align>left</align>
+				<label>[B]Law and Order: Special Victims Unit[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4103">
+				<description>Subtitle</description>
+				<posx>540</posx>
+				<posy>410</posy>
+				<width>110</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Subtitle[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label">
+				<description>Air Date:</description>
+				<posx>540</posx>
+				<posy>480</posy>
+				<width>110</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Air Date:[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4104">
+				<description>Air Date</description>
+				<posx>640</posx>
+				<posy>480</posy>
+				<width>665</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]8:00 PM - 9:00 PM (60 min) on Mon 2/4/13[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label">
+				<description>Duration:</description>
+				<posx>540</posx>
+				<posy>515</posy>
+				<width>110</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Genre(s):[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4105">
+				<description>Duration</description>
+				<posx>650</posx>
+				<posy>515</posy>
+				<width>665</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]1 hr[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label">
+				<description>Cast:</description>
+				<posx>540</posx>
+				<posy>585</posy>
+				<width>110</width>
+				<height>5</height>
+				<textcolor>ffd6ffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Cast:[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4106">
+				<description>Cast</description>
+				<posx>600</posx>
+				<posy>585</posy>
+				<width>665</width>
+				<height>5</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Ashton Kutcher, Sean-William Scott, Kristy Swanson, Jennifer Garner, Markal Sokoloff[/B]</label>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="4107">
+				<description>Description</description>
+				<posx>405</posx>
+				<posy>395</posy>
+				<width>675</width>
+				<height>200</height>
+				<textcolor>fffeffff</textcolor>
+				<font>font14</font>
+				<align>left</align>
+				<label>[B]Ric heads to a South Boston bar searching for relics of the town's bare knuckle boxing past; finds include brass knuckles, a ringbell and a portable camera.[/B]</label>
+				<aligny>top</aligny>
+				<wrapmultiline>true</wrapmultiline>
+			</control>
+		</control>
+    </controls>
+</window>

@@ -24,6 +24,7 @@ import datetime
 
 from resources.lib.globals import *
 from resources.lib.strings import *
+from resources.lib.gui.menu_helper import MenuHelper
 
 class ProgramType(object):
     MOVIE = 100
@@ -56,7 +57,6 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
     C_MENU_OPTION_6 = 4006
     C_MENU_OPTION_7 = 4007
     C_MENU_OPTION_8 = 4008
-    C_MENU_OPTION_SELECTED = C_MENU_OPTION_2
     
     C_PROGRAM_CHANNEL = 4100
     C_PROGRAM_NAME = 4101
@@ -69,6 +69,17 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
     C_PROGRAM_END_TIME = 4107
     C_PROGRAM_DESCRIPTION = 4108
     C_PROGRAM_PROGRESS = 4109
+    
+    controls = [
+        C_MENU_OPTION_1,
+        C_MENU_OPTION_2,
+        C_MENU_OPTION_3,
+        C_MENU_OPTION_4,
+        C_MENU_OPTION_5,
+        C_MENU_OPTION_6,
+        C_MENU_OPTION_7,
+        C_MENU_OPTION_8
+    ]
 
     def __new__(cls, program):
         return super(ProgramOptions, cls).__new__(cls, 'script-tvguide-programoptions.xml', ADDON.getAddonInfo('path'))
@@ -94,11 +105,9 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
 
     @buggalo.buggalo_try_except({'method' : 'ProgramOptions.onInit'})
     def onInit(self):
-        self.activeMenuOption = 1
         self._prepareMenuOptions()
-        self._renderMenu()
+        self.menu = MenuHelper(self, self.menuOptions, self.controls, [], 0, 0, 0, 2)
         self._renderProgramInfo()
-        #selectedControl.setLabel('Record Episode')
         #if not self.program.channel.isPlayable():
         #    playControl.setEnabled(False)
         #if self.program.channel.logo is not None:
@@ -115,35 +124,12 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
             self.close()
 
         elif action.getId() in [ACTION_UP]:
-            if self.activeMenuOption > 0 and self.activeMenuOption <= (len(self.menuOptions)-1):
-                debug('activeMenuOption: %s' % self.activeMenuOption)
-                self.activeMenuOption -= 1
-                self._renderMenu()
+            self.menu.moveUpOne()
             return
 
         elif action.getId() in [ACTION_DOWN]:
-            if self.activeMenuOption >= 0 and self.activeMenuOption < (len(self.menuOptions)-1):
-                debug('activeMenuOption: %s' % self.activeMenuOption)
-                self.activeMenuOption += 1
-                self._renderMenu()
+            self.menu.moveDownOne()
             return
-
-    def _renderMenu(self):
-        offset = self.activeMenuOption - 1
-        debug('offset: %s' % offset)
-        for i in range(0,8):
-            curControl = self.getControl(self.C_MENU_OPTION_1 + i)
-            try:
-                if (i + offset) < 0:
-                    curText = ''
-                else:
-                    curText = self.menuOptions[i + offset]['Label']
-            except IndexError:
-                curText = ''
-            if i == (self.C_MENU_OPTION_SELECTED - self.C_MENU_OPTION_1):
-                curControl.setLabel('[B]%s[/B]' % (curText))
-            else:
-                curControl.setLabel('%s' % (curText))
 
     def _renderProgramInfo(self):
         channelControl = self.getControl(self.C_PROGRAM_CHANNEL)
@@ -202,61 +188,61 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
     def _prepareMenuOptions(self):
         if self.type == ProgramType.MOVIE:
             self.menuOptions = [
-                {'Id':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
-                {'Id':ProgramAction.RECORD, 'Label':'Record'},
-                {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                {'Id':ProgramAction.MORE_LIKE_THIS, 'Label':'More Like This'},
-                {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                {'ActionId':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
+                {'ActionId':ProgramAction.RECORD, 'Label':'Record'},
+                {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                {'ActionId':ProgramAction.MORE_LIKE_THIS, 'Label':'More Like This'},
+                {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
         elif self.type == ProgramType.MOVIE_FUTURE:
             self.menuOptions = [
-                {'Id':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
-                {'Id':ProgramAction.RECORD, 'Label':'Record'},
-                {'Id':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
-                {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                {'Id':ProgramAction.MORE_LIKE_THIS, 'Label':'More Like This'},
-                {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                {'ActionId':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
+                {'ActionId':ProgramAction.RECORD, 'Label':'Record'},
+                {'ActionId':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
+                {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                {'ActionId':ProgramAction.MORE_LIKE_THIS, 'Label':'More Like This'},
+                {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
         elif self.type == ProgramType.EPISODE:
             if self.program.sickbeardManaged:
                 self.menuOptions = [
-                    {'Id':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
-                    {'Id':ProgramAction.CANCEL_RECORDING, 'Label':'Cancel This Recording'},
-                    {'Id':ProgramAction.CANCEL_SERIES, 'Label':'Cancel This Series'},
-                    {'Id':ProgramAction.MODIFY_SERIES, 'Label':'Modify Series'},
-                    {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                    {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                    {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                    {'ActionId':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
+                    {'ActionId':ProgramAction.CANCEL_RECORDING, 'Label':'Cancel This Recording'},
+                    {'ActionId':ProgramAction.CANCEL_SERIES, 'Label':'Cancel This Series'},
+                    {'ActionId':ProgramAction.MODIFY_SERIES, 'Label':'Modify Series'},
+                    {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                    {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                    {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
             else:
                 self.menuOptions = [
-                    {'Id':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
-                    {'Id':ProgramAction.RECORD_EPISODE, 'Label':'Record Episode'},
-                    {'Id':ProgramAction.RECORD_SERIES, 'Label':'Record Series'},
-                    {'Id':ProgramAction.RECORD_SERIES_W_OPTIONS, 'Label':'Record Series w Options'},
-                    {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                    {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                    {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                    {'ActionId':ProgramAction.WATCH_NOW, 'Label':'Watch Now'},
+                    {'ActionId':ProgramAction.RECORD_EPISODE, 'Label':'Record Episode'},
+                    {'ActionId':ProgramAction.RECORD_SERIES, 'Label':'Record Series'},
+                    {'ActionId':ProgramAction.RECORD_SERIES_W_OPTIONS, 'Label':'Record Series w Options'},
+                    {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                    {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                    {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
         elif self.type == ProgramType.EPISODE_FUTURE:
             if self.program.sickbeardManaged:
                 self.menuOptions = [
-                    {'Id':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
-                    {'Id':ProgramAction.CANCEL_RECORDING, 'Label':'Cancel This Recording'},
-                    {'Id':ProgramAction.CANCEL_SERIES, 'Label':'Cancel This Series'},
-                    {'Id':ProgramAction.MODIFY_SERIES, 'Label':'Modify Series'},
-                    {'Id':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
-                    {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                    {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                    {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                    {'ActionId':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
+                    {'ActionId':ProgramAction.CANCEL_RECORDING, 'Label':'Cancel This Recording'},
+                    {'ActionId':ProgramAction.CANCEL_SERIES, 'Label':'Cancel This Series'},
+                    {'ActionId':ProgramAction.MODIFY_SERIES, 'Label':'Modify Series'},
+                    {'ActionId':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
+                    {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                    {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                    {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
             else:
                 self.menuOptions = [
-                    {'Id':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
-                    {'Id':ProgramAction.RECORD_EPISODE, 'Label':'Record Episode'},
-                    {'Id':ProgramAction.RECORD_SERIES, 'Label':'Record Series'},
-                    {'Id':ProgramAction.RECORD_SERIES_W_OPTIONS, 'Label':'Record Series w Options'},
-                    {'Id':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
-                    {'Id':ProgramAction.FULL_INFO, 'Label':'Full Info'},
-                    {'Id':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
-                    {'Id':ProgramAction.EXIT, 'Label':'Exit'}]
+                    {'ActionId':ProgramAction.TUNE_TO_CHANNEL, 'Label':'Tune to Channel'},
+                    {'ActionId':ProgramAction.RECORD_EPISODE, 'Label':'Record Episode'},
+                    {'ActionId':ProgramAction.RECORD_SERIES, 'Label':'Record Series'},
+                    {'ActionId':ProgramAction.RECORD_SERIES_W_OPTIONS, 'Label':'Record Series w Options'},
+                    {'ActionId':ProgramAction.SET_REMINDER, 'Label':'Set Reminder'},
+                    {'ActionId':ProgramAction.FULL_INFO, 'Label':'Full Info'},
+                    {'ActionId':ProgramAction.UPCOMING_SHOWS, 'Label':'Upcoming Shows'},
+                    {'ActionId':ProgramAction.EXIT, 'Label':'Exit'}]
 
     @buggalo.buggalo_try_except({'method' : 'ProgramOptions.onClick'})
     def onClick(self, controlId):
@@ -266,4 +252,4 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
         pass
 
     def getSelectedMenuOption(self):
-        return self.menuOptions[self.activeMenuOption]
+        return self.menu.getSelectedMenuItem()

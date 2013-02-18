@@ -33,6 +33,7 @@ import re
 from resources.lib.globals import *
 from resources.lib.strings import *
 
+from resources.lib.gui.dvr import *
 from resources.lib.gui.popup_menu import *
 from resources.lib.gui.channels_menu import *
 from resources.lib.gui.program_options import *
@@ -306,6 +307,10 @@ class TVGuide(xbmcgui.WindowXML):
             program = self._getProgramFromControl(controlInFocus)
             if program is not None:
                 self._showProgramOptions(program)
+        elif action.getId() == ACTION_BUILT_IN_FUNCTION:
+            self._showDVR()
+        else:
+            debug('Uknown option: %s' % action.getId())
 
 
     @buggalo.buggalo_try_except({'method' : 'TVGuide.onClick'})
@@ -420,39 +425,51 @@ class TVGuide(xbmcgui.WindowXML):
         self._hideControl(self.C_MAIN_MOUSE_CONTROLS)
         debug('mouse controls hidden')
         d = ProgramOptions(program)
+        #d = DVR()
         d.doModal()
         activeMenuOption = d.getSelectedMenuOption()
 
-        debug('activeMenuOption: %s: %s' % (activeMenuOption['Id'],activeMenuOption['Label']))
+        debug('activeMenuOption: %s: %s' % (activeMenuOption['ActionId'],activeMenuOption['Label']))
 
-        if activeMenuOption['Id'] == ProgramAction.TUNE_TO_CHANNEL:
+        if activeMenuOption['ActionId'] == ProgramAction.TUNE_TO_CHANNEL:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.WATCH_NOW:
+        elif activeMenuOption['ActionId'] == ProgramAction.WATCH_NOW:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.RECORD:
+        elif activeMenuOption['ActionId'] == ProgramAction.RECORD:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.RECORD_EPISODE:
+        elif activeMenuOption['ActionId'] == ProgramAction.RECORD_EPISODE:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.RECORD_SERIES:
+        elif activeMenuOption['ActionId'] == ProgramAction.RECORD_SERIES:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.RECORD_SERIES_W_OPTIONS:
+        elif activeMenuOption['ActionId'] == ProgramAction.RECORD_SERIES_W_OPTIONS:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.SET_REMINDER:
+        elif activeMenuOption['ActionId'] == ProgramAction.SET_REMINDER:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.FULL_INFO:
+        elif activeMenuOption['ActionId'] == ProgramAction.FULL_INFO:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.MORE_LIKE_THIS:
+        elif activeMenuOption['ActionId'] == ProgramAction.MORE_LIKE_THIS:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.UPCOMING_SHOWS:
+        elif activeMenuOption['ActionId'] == ProgramAction.UPCOMING_SHOWS:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.EXIT:
+        elif activeMenuOption['ActionId'] == ProgramAction.EXIT:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.CANCEL_RECORDING:
+        elif activeMenuOption['ActionId'] == ProgramAction.CANCEL_RECORDING:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.CANCEL_SERIES:
+        elif activeMenuOption['ActionId'] == ProgramAction.CANCEL_SERIES:
             pass
-        elif activeMenuOption['Id'] == ProgramAction.MODIFY_SERIES:
+        elif activeMenuOption['ActionId'] == ProgramAction.MODIFY_SERIES:
             pass
+
+        del d
+
+    def _showDVR(self):
+        self._hideControl(self.C_MAIN_MOUSE_CONTROLS)
+        debug('mouse controls hidden')
+        d = DVR()
+        d.doModal()
+        #activeMenuOption = d.getSelectedMenuOption()
+
+        #debug('activeMenuOption: %s: %s' % (activeMenuOption['ActionId'],activeMenuOption['Label']))
 
         del d
 
