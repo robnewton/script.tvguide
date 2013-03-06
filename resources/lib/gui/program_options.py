@@ -122,6 +122,7 @@ class ProgramOptions(xbmcgui.WindowXMLDialog):
 
         if action.getId() in [ACTION_SELECT_ITEM]:
             self.close()
+            return
 
         elif action.getId() in [ACTION_UP]:
             self.menu.moveUpOne()

@@ -251,10 +251,6 @@ class Database(object):
 
         return expired
 
-    def setShowAsSickBeardManaged(self, seriesId):
-        c = self.conn.cursor()
-        c.execute('UPDATE programs set in_sickbeard = 1 where series_id = ?',[program.seriesId])
-
     def updateChannelAndProgramListCaches(self, callback, date = datetime.datetime.now(), progress_callback = None, clearExistingProgramList = True):
         self.eventQueue.append([self._updateChannelAndProgramListCaches, callback, date, progress_callback, clearExistingProgramList])
         self.event.set()
@@ -518,7 +514,30 @@ class Database(object):
         expired = row is None or row['programs_updated'].day != today.day
         c.close()
         return expired
+        
+    def setShowAsSickBeardManaged(self, seriesId):
+        if seriesId is not None:
+            self._invokeAndBlockForResult(self._setShowAsSickBeardManaged, seriesId)
+        # no result, but block until operation is done
 
+    def _setShowAsSickBeardManaged(self, seriesId):
+        if seriesId is not None:
+            c = self.conn.cursor()
+            c.execute('UPDATE programs set in_sickbeard = 1 where series_id = ?',[seriesId])
+            self.conn.commit()
+            c.close()
+        
+    def unsetShowAsSickBeardManaged(self, seriesId):
+        if seriesId is not None:
+            self._invokeAndBlockForResult(self._unsetShowAsSickBeardManaged, seriesId)
+        # no result, but block until operation is done
+
+    def _unsetShowAsSickBeardManaged(self, seriesId):
+        if seriesId is not None:
+            c = self.conn.cursor()
+            c.execute('UPDATE programs set in_sickbeard = 0 where series_id = ?',[seriesId])
+            self.conn.commit()
+            c.close()
 
     def setCustomStreamUrl(self, channel, stream_url):
         if stream_url is not None:

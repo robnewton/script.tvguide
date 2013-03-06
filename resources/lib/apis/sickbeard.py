@@ -42,9 +42,12 @@ class SickBeard(object):
         return response['result'] == 'success'
 
     def addNewShow(self, tvdbid, flatten=0, status='skipped'):
-        response = json.load(urllib.urlopen(self._buildUrl('show.addnew', {'tvdbid' : tvdbid, 'flatten_folders' : flatten, 'status' : status})))
-        debug('tvdbid=%s, flatten=%s, status=%s, result=%s' % (tvdbid, flatten, status, response['result']))
-        return response['result'] == 'success'
+        if not self.isShowManaged(tvdbid):
+            response = json.load(urllib.urlopen(self._buildUrl('show.addnew', {'tvdbid' : tvdbid, 'flatten_folders' : flatten, 'status' : status})))
+            debug('tvdbid=%s, flatten=%s, status=%s, result=%s' % (tvdbid, flatten, status, response['result']))
+            return response['result'] == 'success'
+        else:
+            return False
 
     # Get the show ID numbers
     def getShowIds(self):
@@ -146,9 +149,10 @@ class SickBeard(object):
         return version
 
     # Set the status of an episode
-    def setShowStatus(self, tvdbid, season, episode, status):
-        result=json.load(urllib.urlopen(self._buildUrl('episode.setstatus', {'tvdbid' : tvdbid, 'season' : season, 'episode' : episode, 'status' : status})))
-        return result
+    def setEpisodeStatus(self, tvdbid, season, episode, status):
+        result = json.load(urllib.urlopen(self._buildUrl('episode.setstatus', {'tvdbid' : tvdbid, 'season' : season, 'episode' : episode, 'status' : status})))
+        debug('tvdbid=%s, season=%s, episode=%s, status=%s, result=%s' % (tvdbid, season, episode, status, result))
+        return result['result'] == 'success'   
 
     # Return a list of the last 20 snatched/downloaded episodes    
     def forceSearch(self):
@@ -167,6 +171,5 @@ class SickBeard(object):
         return message    
 
     def deleteShow(self, tvdbid):
-        result=json.load(urllib.urlopen(self._buildUrl('show.delete', {'tvdbid' : tvdbid})))
-        message = result['message']
-        return message     
+        result = json.load(urllib.urlopen(self._buildUrl('show.delete', {'tvdbid' : tvdbid})))
+        return result['result'] == 'success'   

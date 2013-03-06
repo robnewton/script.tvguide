@@ -30,6 +30,8 @@ import json
 import os
 import re
 
+from time import sleep
+
 from resources.lib.globals import *
 from resources.lib.strings import *
 
@@ -43,6 +45,12 @@ from resources.lib.gui.choose_stream_addon_dialog import *
 from resources.lib.utils.database import *
 from resources.lib.utils.streaming import *
 from resources.lib.utils.notification import Notification
+from resources.lib.utils import database
+
+from resources.lib.apis.sickbeard import *
+from resources.lib.apis.couchpotato import *
+from resources.lib.apis.tvdb import *
+from resources.lib.apis.tmdb import *
 
 class Point(object):
     def __init__(self):
@@ -391,24 +399,9 @@ class TVGuide(xbmcgui.WindowXML):
             self.playChannel(program.channel)
 
         elif buttonClicked == PopupMenu.C_POPUP_RECORD_SICKBEARD:
-            sbAPI = sickbeard.SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            sbAPI = SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
             if sbAPI.addNewShow(program.seriesId) == True:
-                c = None
-                profilePath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
-                if not os.path.exists(profilePath):
-                    os.makedirs(profilePath)
-                self.databasePath = os.path.join(profilePath, 'source.db')
-                try:
-                    self.conn = sqlite3.connect(self.databasePath, detect_types=sqlite3.PARSE_DECLTYPES)
-                    self.conn.execute('PRAGMA foreign_keys = ON')
-                    self.conn.row_factory = sqlite3.Row
-
-                    c = self.conn.cursor()
-                    c.execute('UPDATE programs SET in_sickbeard = 1 where series_id = ?',[program.seriesId])
-                    c.close()
-                finally:
-                    c.close()
-                    self.conn.commit()
+                self.database.setShowAsSickBeardManaged(program.seriesId)
             self.onRedrawEPG(self.channelIdx, self.viewStartDate)
 
         elif buttonClicked == PopupMenu.C_POPUP_CHANNELS:
@@ -425,25 +418,58 @@ class TVGuide(xbmcgui.WindowXML):
         self._hideControl(self.C_MAIN_MOUSE_CONTROLS)
         debug('mouse controls hidden')
         d = ProgramOptions(program)
-        #d = DVR()
         d.doModal()
         activeMenuOption = d.getSelectedMenuOption()
 
         debug('activeMenuOption: %s: %s' % (activeMenuOption['ActionId'],activeMenuOption['Label']))
 
         if activeMenuOption['ActionId'] == ProgramAction.TUNE_TO_CHANNEL:
+            if not self.playChannel(program.channel):
+                result = self.streamingService.detectStream(program.channel)
+                if not result:
+                    # could not detect stream, show context menu
+                    self._showContextMenu(program)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.WATCH_NOW:
+            if not self.playChannel(program.channel):
+                result = self.streamingService.detectStream(program.channel)
+                if not result:
+                    # could not detect stream, show context menu
+                    self._showContextMenu(program)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.RECORD:
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.RECORD_EPISODE:
+            sbAPI = SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            if sbAPI.isShowManaged(program.seriesId) == False:
+                if sbAPI.addNewShow(program.seriesId) == True:
+                    self.database.setShowAsSickBeardManaged(program.seriesId)
+            for n in range(1, 10):
+                if sbAPI.setEpisodeStatus(program.seriesId, program.seasonNumber, program.episodeNumber, 'wanted'):
+                    self.database.setShowAsSickBeardManaged(program.seriesId)
+                    break
+                sleep(1)
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.RECORD_SERIES:
+            sbAPI = SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            if sbAPI.addNewShow(program.seriesId) == True:
+                self.database.setShowAsSickBeardManaged(program.seriesId)
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.RECORD_SERIES_W_OPTIONS:
+            sbAPI = SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            if sbAPI.addNewShow(program.seriesId) == True:
+                self.database.setShowAsSickBeardManaged(program.seriesId)
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.SET_REMINDER:
+            if program.notificationScheduled:
+                self.notification.removeNotification(program)
+            else:
+                self.notification.addNotification(program)
+
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.FULL_INFO:
             pass
@@ -456,6 +482,10 @@ class TVGuide(xbmcgui.WindowXML):
         elif activeMenuOption['ActionId'] == ProgramAction.CANCEL_RECORDING:
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.CANCEL_SERIES:
+            sbAPI = SickBeard(ADDON.getSetting('sickbeard.baseurl'),ADDON.getSetting('sickbeard.apikey'))
+            if sbAPI.deleteShow(program.seriesId) == True:
+                self.database.unsetShowAsSickBeardManaged(program.seriesId)
+            self.onRedrawEPG(self.channelIdx, self.viewStartDate)
             pass
         elif activeMenuOption['ActionId'] == ProgramAction.MODIFY_SERIES:
             pass
