@@ -19,6 +19,7 @@
 #
 import time
 import xbmcvfs
+import os
 from xml.etree import ElementTree
 
 from resources.lib.source_abstract import *
