@@ -20,6 +20,7 @@
 import xbmc
 import datetime
 import inspect
+import unicodedata
 
 DEBUG = True
 
@@ -58,11 +59,24 @@ HALF_HOUR = datetime.timedelta(minutes = 30)
 
 
 
+def uni(string, encoding = 'utf-8'):
+    if isinstance(string, basestring):
+        if not isinstance(string, unicode):
+           string = unicode(string, encoding)
+
+    return string
+
+def ascii(string):
+    if isinstance(string, basestring):
+        if isinstance(string, unicode):
+           string = string.encode('ascii', 'ignore')
+
+    return string
 
 def debug(s):
     if DEBUG:
-        xbmc.log('[script.tvguide.%s] %s' % (getCallerName(), str(s)), xbmc.LOGDEBUG)
-
+        xbmc.log('[script.tvguide.%s] %s' % (getCallerName(), ascii(s)), xbmc.LOGDEBUG)
+ 
 def getCallerName(skip=2, includeModule=False):
     """Get a name of a caller in the format module.class.method
     

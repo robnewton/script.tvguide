@@ -83,7 +83,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
             result = None
             if elem.tag == "programme":
                 channel = elem.get("channel")
-                description = elem.findtext("desc")
+                description = ascii(elem.findtext("desc"))
                 iconElement = elem.find("icon")
                 icon = None
                 if iconElement is not None:
@@ -152,7 +152,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                     tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
                     #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
                     if tvdbid == 0:
-                        tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
+                        tvdbid = tvdbAPI.getIdByShowName(ascii(elem.findtext('title')))
 
                     if tvdbid > 0:
                         #Date element holds the original air date of the program
@@ -178,7 +178,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                 if movie and ADDON.getSetting('tmdb.enabled') == 'true':
                     #Date element holds the original air date of the program
                     movieYear = elem.findtext('date')
-                    movieInfo = tmdbAPI.getMovie(elem.findtext('title'), movieYear)
+                    movieInfo = tmdbAPI.getMovie(ascii(elem.findtext('title')), movieYear)
                     imdbid = movieInfo['imdb_id']
                     moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
                 
@@ -194,7 +194,7 @@ def parseXMLTV(context, f, size, logoFolder, progress_callback):
                 #    if cpAPI.isMovieManaged(imdbid):
                 #        cpManaged = 1
                 
-                result = Program(channel, elem.findtext('title'), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
+                result = Program(channel, ascii(elem.findtext('title')), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
                 
                 debug('new %r' % result)
 

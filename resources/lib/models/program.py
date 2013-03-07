@@ -18,6 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
+from resources.lib.globals import *
 
 #Rob Newton - 20130130 - Added series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato
 class Program(object):
@@ -44,10 +45,10 @@ class Program(object):
         @param notificationScheduled:
         """
         self.channel = channel
-        self.title = title
+        self.title = uni(title)
         self.startDate = startDate
         self.endDate = endDate
-        self.description = description
+        self.description = uni(description)
         self.imageLarge = imageLarge
         self.imageSmall = imageSmall
         self.seriesId = seriesId
@@ -55,7 +56,7 @@ class Program(object):
         self.episodeId = episodeId
         self.seasonNumber = seasonNumber
         self.episodeNumber = episodeNumber
-        self.category = category
+        self.category = uni(category)
         self.new = new
         self.sickbeardManaged = sickbeardManaged
         self.couchpotatoManaged = couchpotatoManaged
@@ -63,4 +64,4 @@ class Program(object):
 
     def __repr__(self):
         return 'Program(channel=%s, title=%s, startDate=%s, endDate=%s, description=%s, imageLarge=%s, imageSmall=%s, seriesId=%s, movieId=%s, episodeId=%s, seasonNumber=%s, episodeNumber=%s, category=%s, new=%s, sickbeardManaged=%s, couchpotatoManaged=%s, notificationScheduled=%s)' % \
-            (self.channel, self.title, self.startDate, self.endDate, self.description, self.imageLarge, self.imageSmall, self.seriesId, self.movieId, self.episodeId, self.seasonNumber, self.episodeNumber, self.category, self.new, self.sickbeardManaged, self.couchpotatoManaged, self.notificationScheduled)
+            (self.channel, self.title.encode('utf-8'), self.startDate, self.endDate, self.description.encode('utf-8'), self.imageLarge, self.imageSmall, self.seriesId, self.movieId, self.episodeId, self.seasonNumber, self.episodeNumber, self.category.encode('utf-8'), self.new, self.sickbeardManaged, self.couchpotatoManaged, self.notificationScheduled)

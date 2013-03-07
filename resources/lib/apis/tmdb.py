@@ -47,6 +47,7 @@ class TMDB(object):
         return '%s%s%s' % (self.imagebaseurl, 'w92/', filename)
 
     def getMovie(self, movieName, year):
+        debug('movieName: %s' % movieName)
         response = json.loads(urllib2.urlopen(urllib2.Request(self._buildUrl('search/movie', {'query' : movieName, 'year' : year}), headers={"Accept": "application/json"})).read())
         if response['total_results'] > 0:
             debug('Response: \r\n%s' % response)
