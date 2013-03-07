@@ -18,7 +18,6 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-from resources.lib.globals import *
 
 #Rob Newton - 20130130 - Added series_id, movie_id, episode_id, season_number, episode_number, category, new, in_sickbeard, in_couchpotato
 class Program(object):
@@ -45,10 +44,10 @@ class Program(object):
         @param notificationScheduled:
         """
         self.channel = channel
-        self.title = uni(title)
+        self.title = title
         self.startDate = startDate
         self.endDate = endDate
-        self.description = uni(description)
+        self.description = description
         self.imageLarge = imageLarge
         self.imageSmall = imageSmall
         self.seriesId = seriesId
@@ -56,7 +55,7 @@ class Program(object):
         self.episodeId = episodeId
         self.seasonNumber = seasonNumber
         self.episodeNumber = episodeNumber
-        self.category = uni(category)
+        self.category = category
         self.new = new
         self.sickbeardManaged = sickbeardManaged
         self.couchpotatoManaged = couchpotatoManaged
